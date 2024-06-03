@@ -121,7 +121,7 @@ header .searchin {
 .search_container #results {
   display: flex;
   justify-content: space-between;
-  margin: 0 10px;
+  margin: 0 10%;
 }
 .search_container {
   text-align: center;
@@ -256,6 +256,108 @@ a {
 
 .products .card_btn:hover {
   border: 2px solid var(--sacandry--);
+}
+
+/* ----- prudact box ----- */
+
+.product_box {
+  width: 60%;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  margin-bottom: 300px;
+}
+
+.product_img-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.product_img-box img {
+  width: 70%;
+  max-width: 600px;
+  min-width: 300px;
+  border-radius: 30px;
+  display: flex;
+}
+
+.product_detail-box {
+  display: flex;
+  margin: 10% -10px;
+  text-align: center;
+  color: var(--text--);
+  flex-direction: column;
+}
+
+.product_detail-box .price {
+  display: inline-block;
+  border-radius: 5px;
+  background-color: var(--backtow--);
+  color: var(--text--);
+  padding: 2px 2px;
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+.product_box .likebut{
+  background: none;
+  border: none;
+  position: relative;
+  top: 7px;
+}
+@media (max-width: 600px) {
+  .product_box {
+    width: 80%;
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px auto;
+  }
+
+  .product_img-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f8f8f8;
+  }
+
+  .product_img-box img {
+    width: 100%;
+    border-radius: 10px;
+  }
+
+  .product_img-box span {
+    display: inline-block;
+    background-color: #fff9a8;
+    color: var(--text--);
+    padding: 2px 2px;
+    margin-bottom: 15px;
+    font-weight: bold;
+  }
+
+  .product_detail-box {
+    text-align: center;
+    color: var(--text--);
+    margin-top: 10px;
+  }
+}
+
+.product_detail-box .adcart {
+  align-self: center;
+  margin-top: 20px;
+  margin-left: 10px;
+  border-radius: 10px;
+  outline: none;
+  border: none;
+  color: white;
+  background-color: var(--text--);
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  transition: 0.4s ease-in-out opacity, 0.1s ease-in-out active;
+  padding: 1em;
 }
 
 /* --- Footer --- */
