@@ -29,7 +29,13 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // search function
-function searchbut() {
-  const searchinput = document.getElementsByClassName("searchin");
-  
+function searchmodel() {
+  const searchModel = document.getElementById("searchModel");
+  // يتم تبديل خاصية العرض بين block و none
+  if (searchModel.style.display === "block") {
+    searchModel.style.display = "none";
+  } else {
+    searchModel.style.display = "block";
+  }
 }
+
