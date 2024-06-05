@@ -54,3 +54,14 @@ document.getElementById("searchQuery").addEventListener("input", function () {
   };
   xhr.send();
 });
+
+// cart function
+function cartmodel() {
+  const cartmodel = document.getElementById("cartmodel");
+  // يتم تبديل خاصية العرض بين block و none
+  if (cartmodel.style.display === "block") {
+    cartmodel.style.display = "none";
+  } else {
+    cartmodel.style.display = "block";
+  }
+}

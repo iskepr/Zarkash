@@ -1,11 +1,11 @@
 <?php
 include('layout/actions.php');
 include('layout/header.php');
+
 if (isset($_GET['id'])) {
   $ProductID = mysqli_real_escape_string($con, $_GET['id']);
   $query = "SELECT * FROM products WHERE id = '$ProductID'";
   $result = mysqli_query($con, $query);
-  $products = mysqli_query($con, "SELECT * FROM products ORDER BY `name` DESC");
   if (mysqli_num_rows($result) == 1) {
     $product = mysqli_fetch_assoc($result);
   } else {
@@ -17,6 +17,50 @@ if (isset($_GET['id'])) {
   echo "لم يتم تحديد معرف المنتج.";
   echo '<a href="home.php">الرئيسية</a>';
   exit();
+}
+
+if (isset($_POST['addcart'])) {
+  $quantity = $_POST['Quantity'];
+  // إعداد بيانات المنتج للسلة
+  $cart_item = [
+    'id' => $product['id'],
+    'name' => $product['name'],
+    'price' => $product['price'],
+    'img' => $product['img'],
+    'quantity' => $quantity
+  ];
+
+  // بدء جلسة لتخزين عناصر السلة
+  if (!isset($_SESSION['cart'])) {
+    $_SESSION['cart'] = [];
+  }
+  $_SESSION['cart'][] = $cart_item;
+
+  echo "تم إضافة المنتج إلى السلة.";
+  echo '<a href="cart.php">عرض السلة</a>';
+  exit();
+}
+
+if (isset($_POST['confirm_order'])) {
+  session_start();
+  if (isset($_SESSION['cart'])) {
+    $user_id = 1; // يجب أن يكون معرّف المستخدم ديناميكياً (مثلاً من جلسة المستخدم)
+    $order_query = "INSERT INTO orders (user_id, created_at) VALUES ('$user_id', NOW())";
+    if (mysqli_query($con, $order_query)) {
+      $order_id = mysqli_insert_id($con);
+      foreach ($_SESSION['cart'] as $item) {
+        $product_id = $item['id'];
+        $quantity = $item['quantity'];
+        $price = $item['price'];
+        $order_item_query = "INSERT INTO order_items (order_id, product_id, quantity, price) VALUES ('$order_id', '$product_id', '$quantity', '$price')";
+        mysqli_query($con, $order_item_query);
+      }
+      unset($_SESSION['cart']);
+      echo "تم تأكيد الطلب.";
+    } else {
+      echo "فشل في تأكيد الطلب.";
+    }
+  }
 }
 ?>
 
@@ -49,7 +93,7 @@ if (isset($_GET['id'])) {
         </p>
         <form action="product.php?id=<?php echo $product['id']; ?>" method="post" class="actions">
           <input type="number" name="Quantity" value="1" min="1" required>
-          <button type="submit" name="addcard" class="adcart">اضف الي العربة</button>
+          <button type="submit" name="addcart" class="adcart">اضف الي العربة</button>
           <button type="submit" name="like" class="likebut"><span class="material-symbols-outlined">favorite</span></button>
         </form>
       </div>
@@ -69,7 +113,7 @@ if (isset($_GET['id'])) {
                   <?php
                   if ($product["Time"]) {
                     $productTime = strtotime($product["Time"]);
-                    $twoDaysAgo = time() - (2 * 24 * 60 * 60); // حساب الوقت قبل يومين بالثواني (2 * 24 ساعة * 60 دقيقة * 60 ثانية)
+                    $twoDaysAgo = time() - (2 * 24 * 60 * 60);
                     if ($productTime >= $twoDaysAgo) {
                       echo '<div class="z-1 position-absolute rounded-3 m-3 px-3 border border-dark-subtle">جديد</div>';
                     }
@@ -96,10 +140,9 @@ if (isset($_GET['id'])) {
                             <h3><?php echo $product['price']; ?> جنية</h3>
                           </div>
                           </div>
-                      </div>
                   </a>
                 </div>
-                <?php } ?>
+              <?php } ?>
             </div>
           </div>
         </div>
@@ -107,6 +150,9 @@ if (isset($_GET['id'])) {
     </section>
   </div>
 
-</div>
+  <form action="product.php" method="post">
+    <button type="submit" name="confirm_order">تأكيد الطلب</button>
+  </form>
 </section>
-<?php include('layout/footer.php');
+
+<?php include('layout/footer.php'); ?>

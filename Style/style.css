@@ -50,9 +50,8 @@ h4,
 h5,
 h6 {
   font-weight: 200;
-  text-align: right;
 }
-input {
+input,select {
   border: solid 1px var(--main--);
   width: 60%;
   height: 30px;
@@ -60,10 +59,21 @@ input {
   padding: 0 10px;
   margin: 10px 0;
 }
-input::placeholder {
+input::placeholder,select::placeholder {
   color: #000;
   font-weight: bold;
   font-family: "IBM Plex Sans Arabic", sans-serif;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+  width: 30px;
+}
+button {
+  color: var(--pramry--);
+  background-color: var(--main--);
+  border-radius: 10px;
+  padding: 10px;
+  border: none;
 }
 /* --- Background --- */
 .background {
@@ -133,7 +143,29 @@ header .searchin {
 .searchmodel{
   display: none;
 }
-/* --- Body --- */
+/* cart */
+#cartmodel {
+  display: none;
+}
+.cartmodel {
+  right: 0px;
+  top: 0px;
+  width: 390px;
+  height: 100%;
+  z-index: 100;
+  padding: 30px 10px;
+  position: fixed;
+  background-color: var(--pramry--);
+  box-shadow: -20px 0px 0px 1000px #0000005c;
+}
+.cartmodel table {
+  width: 100%;
+  text-align: left;
+}
+.cartmodel .cart {
+  margin: 20px 0px;
+}
+/* Body */
 body {
   display: flex;
   background-color: var(--pramry--);
@@ -226,6 +258,23 @@ a {
   flex-direction: row;
   justify-content: flex-end;
   align-items: center;
+}
+.products .card_footer .admininfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.products .card_footer .admininfo span {
+  border: solid 1px var(--main--);
+  border-radius: 5px;
+  padding: 3px;
+  margin: 5px 0;
+}
+.products .card_footer .admininfo .card_btn {
+  color: var(--pramry--);
+  background-color: var(--main--);
+  border-radius: 5px;
+  padding: 0 5px;
 }
 
 .products .card_price {
@@ -445,4 +494,19 @@ footer hr {
     display: flex;
     justify-content: center;
   }
+}
+
+/* dashboard */
+.dash {
+  margin: 10px 10%;
+  padding: 20px;
+  text-align: center;
+}
+.dash .upprod{
+  display: flex;
+  flex-direction: column-reverse;
+  border: solid 1px var(--main--);
+  border-radius: 20px;
+  padding: 10px;
+  margin: 10px;
 }
