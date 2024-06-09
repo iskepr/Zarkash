@@ -56,12 +56,69 @@ document.getElementById("searchQuery").addEventListener("input", function () {
 });
 
 // cart function
+document.addEventListener("DOMContentLoaded", (event) => {
+  // عند تحميل الصفحة، تحقق من حالة النافذة في localStorage
+  const cartmodel = document.getElementById("cartmodel");
+  const isCartModelOpen = localStorage.getItem("cartmodelState") === "open";
+
+  if (isCartModelOpen) {
+    cartmodel.style.display = "block";
+  } else {
+    cartmodel.style.display = "none";
+  }
+});
+
 function cartmodel() {
   const cartmodel = document.getElementById("cartmodel");
-  // يتم تبديل خاصية العرض بين block و none
-  if (cartmodel.style.display === "block") {
+
+  if (cartmodel.style.opacity === "1") {
+    cartmodel.style.opacity = "0";
     cartmodel.style.display = "none";
+    localStorage.setItem("cartmodelState", "closed"); // احفظ الحالة كـ "مغلق"
   } else {
+    cartmodel.style.opacity = "1";
     cartmodel.style.display = "block";
+    localStorage.setItem("cartmodelState", "open"); // احفظ الحالة كـ "مفتوح"
   }
 }
+
+// like function
+function likeModel() {
+  const likeModel = document.getElementById("likeModel");
+  // يتم تبديل خاصية العرض بين block و none
+  if (likeModel.style.display === "block") {
+    likeModel.style.display = "none";
+  } else {
+    likeModel.style.display = "block";
+  }
+}
+
+// cut photo
+document.getElementById('imgInput').addEventListener('change', function (e) {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      document.getElementById('imgPreview').src = e.target.result;
+      document.getElementById('cropContainer').style.display = 'block';
+      const cropper = new Cropper(document.getElementById('imgPreview'), {
+        aspectRatio: 1,
+        viewMode: 1,
+      });
+      document.getElementById('cropButton').addEventListener('click', function () {
+        const canvas = cropper.getCroppedCanvas();
+        canvas.toBlob(function (blob) {
+          const formData = new FormData();
+          formData.append('croppedImg', blob, 'cropped.jpg');
+          const reader = new FileReader();
+          reader.onloadend = function () {
+            document.getElementById('croppedImg').value = reader.result;
+            document.getElementById('uploadForm').submit();
+          };
+          reader.readAsDataURL(blob);
+        });
+      });
+    };
+    reader.readAsDataURL(file);
+  }
+});

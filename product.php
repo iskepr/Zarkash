@@ -10,58 +10,54 @@ if (isset($_GET['id'])) {
     $product = mysqli_fetch_assoc($result);
   } else {
     echo "لا يوجد منتج بهذا المعرف.";
-    echo '<a href="home.php">الرئيسية</a>';
+    echo '<a href="index.php">الرئيسية</a>';
     exit();
   }
 } else {
   echo "لم يتم تحديد معرف المنتج.";
-  echo '<a href="home.php">الرئيسية</a>';
+  echo '<a href="index.php">الرئيسية</a>';
   exit();
 }
 
+// Cart form add
+// Cart form add
 if (isset($_POST['addcart'])) {
   $quantity = $_POST['Quantity'];
-  // إعداد بيانات المنتج للسلة
-  $cart_item = [
-    'id' => $product['id'],
-    'name' => $product['name'],
-    'price' => $product['price'],
-    'img' => $product['img'],
-    'quantity' => $quantity
-  ];
 
-  // بدء جلسة لتخزين عناصر السلة
-  if (!isset($_SESSION['cart'])) {
-    $_SESSION['cart'] = [];
-  }
-  $_SESSION['cart'][] = $cart_item;
-
-  echo "تم إضافة المنتج إلى السلة.";
-  echo '<a href="cart.php">عرض السلة</a>';
-  exit();
-}
-
-if (isset($_POST['confirm_order'])) {
-  session_start();
-  if (isset($_SESSION['cart'])) {
-    $user_id = 1; // يجب أن يكون معرّف المستخدم ديناميكياً (مثلاً من جلسة المستخدم)
-    $order_query = "INSERT INTO orders (user_id, created_at) VALUES ('$user_id', NOW())";
-    if (mysqli_query($con, $order_query)) {
-      $order_id = mysqli_insert_id($con);
-      foreach ($_SESSION['cart'] as $item) {
-        $product_id = $item['id'];
-        $quantity = $item['quantity'];
-        $price = $item['price'];
-        $order_item_query = "INSERT INTO order_items (order_id, product_id, quantity, price) VALUES ('$order_id', '$product_id', '$quantity', '$price')";
-        mysqli_query($con, $order_item_query);
-      }
-      unset($_SESSION['cart']);
-      echo "تم تأكيد الطلب.";
-    } else {
-      echo "فشل في تأكيد الطلب.";
+  // Check if product already exists in cart
+  $product_already_in_cart = false;
+  foreach ($_SESSION['cart'] as $item) {
+    if ($item['id'] == $product['id']) {
+      $product_already_in_cart = true;
+      break;
     }
   }
+
+  // If product already in cart, don't add it again
+  if ($product_already_in_cart) {
+    echo "المنتج موجود بالفعل في السلة.";
+    echo '<a href="cart.php">عرض السلة</a>';
+  } else {
+    // Prepare product data for cart
+    $cart_item = [
+      'id' => $product['id'],
+      'name' => $product['name'],
+      'price' => $product['price'],
+      'img' => $product['img'],
+      'quantity' => $quantity
+    ];
+
+    // Start session to store cart items
+    if (!isset($_SESSION['cart'])) {
+      $_SESSION['cart'] = [];
+    }
+    $_SESSION['cart'][] = $cart_item;
+
+    echo "تم إضافة المنتج إلى السلة.";
+    echo '<a href="cart.php">عرض السلة</a>';
+  }
 }
+
 ?>
 
 <section>

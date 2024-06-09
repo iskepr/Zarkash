@@ -1,0 +1,84 @@
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: bold;
+}
+hr {
+  width: 80%;
+  margin-top: -30px;
+  margin: 10px auto;
+}
+:root {
+  --back--: #000;
+  --back-up--: #111;
+  --text--: #fff;
+  --main--: #255;
+}
+body {
+  background-color: var(--back--);
+  color: var(--text--);
+}
+.top {
+  width: 100%;
+  height: 500px;
+  text-align: center;
+  background-color: var(--back-up--);
+}
+.top .panar {
+  border-radius: 20px;
+  width: 100%;
+}
+.top .panar img {
+  margin: 10px;
+  width: 100%;
+}
+
+.top .proimg {
+  position: relative;
+  top: -70px;
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+  width: 200px;
+}
+.top .proimg img {
+  border: 5px solid var(--back--);
+  border-radius: 50%;
+}
+.top .proimg h2,
+h3 {
+  position: relative;
+  top: -50px;
+  left: 5px;
+  display: flex;
+  margin: auto;
+}
+.info {
+  display: flex;
+  margin: auto;
+}
+.top .folimgs {
+  display: flex;
+  align-items: center;
+  margin-top: -50px;
+}
+
+.folimgs img {
+  margin: 20px -5px;
+  width: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--back--);
+}
+/* pro header  */
+.prohead ul {
+  display: flex;
+  margin: 0 10%;
+  align-items: center;
+  justify-content: space-between;
+}
+.prohead li {
+  text-decoration: none;
+  color: var(--main--);
+}

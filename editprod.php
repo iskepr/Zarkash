@@ -48,7 +48,7 @@ if (isset($_GET['id'])) {
     mysqli_query($con, $del_query);
 
     // إعادة التوجيه بعد التحديث
-    header("Location: dashboard.php");
+    header("Location: index.php");
     exit();
   }
 } else {

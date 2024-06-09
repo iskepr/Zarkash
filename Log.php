@@ -1,7 +1,7 @@
 <?php
 session_start();
 // conection
-$con = mysqli_connect('localhost', 'root', '', 'jasmineboutique');
+$con = mysqli_connect('localhost', 'root', '', 'zarkash');
 if (!$con) {
   die('error' . mysqli_connect_error());
 }

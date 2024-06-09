@@ -65,7 +65,6 @@ input::placeholder,select::placeholder {
   font-family: "IBM Plex Sans Arabic", sans-serif;
 }
 input[type="number"] {
-  -moz-appearance: textfield;
   width: 30px;
 }
 button {
@@ -142,28 +141,30 @@ header .searchin {
 }
 .searchmodel{
   display: none;
+  transition: 0.3s;
 }
 /* cart */
-#cartmodel {
+.model {
+  overflow-y: scroll;
   display: none;
-}
-.cartmodel {
+  transition: 0.3s;
   right: 0px;
   top: 0px;
   width: 390px;
   height: 100%;
   z-index: 100;
   padding: 30px 10px;
+  padding-bottom: 100px;
   position: fixed;
   background-color: var(--pramry--);
   box-shadow: -20px 0px 0px 1000px #0000005c;
 }
-.cartmodel table {
+.model table {
   width: 100%;
   text-align: left;
 }
-.cartmodel .cart {
-  margin: 20px 0px;
+.model .cart {
+  margin: 10px 0px;
 }
 /* Body */
 body {
@@ -509,4 +510,41 @@ footer hr {
   border-radius: 20px;
   padding: 10px;
   margin: 10px;
+}
+.dash .overview {
+  display: flex;
+  flex-wrap: wrap;
+}
+.dash .overview .card {
+  display: flex;
+  padding: 10px;
+  width: 100px;
+  height: 100px;
+  margin: 10px;
+  border-radius: 10px;
+  flex-direction: column;
+  justify-content: center;
+  border: 1px solid var(--main--);
+}
+/* more */
+.cropper-container {
+  height: 200px;
+}
+.masseg {
+  position: fixed;
+  bottom: 20px;
+  right: 10px;
+  z-index: 100;
+  padding: 10px;
+  border-radius: 10px;
+  color: var(--pramry--);
+  background-color: var(--main--);
+  transition: 1s;
+  transform: translateX(150px);
+  animation: msg 5s;
+}
+@keyframes msg {
+  0% { transform: translateX(150px);}
+  50% { transform: translateX(0px); }
+  100% { transform: translateX(150px);}
 }
