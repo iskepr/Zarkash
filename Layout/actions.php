@@ -15,22 +15,70 @@ if (isset($_SESSION['id'])) {
 // Saves form 
 
 if (isset($_POST['like'])) {
+  if (isset($UserID)) {
+    if (isset($_GET['id'])) {
+      $ProductID = mysqli_real_escape_string($con, $_GET['id']);
+      $check_sql_like = "SELECT * FROM Saves WHERE UserID = '$UserID' AND ProductID = '$ProductID'";
+      $check_result_like = mysqli_query($con, $check_sql_like);
+    }
+    if (mysqli_num_rows($check_result_like) > 0) {
+      $row = mysqli_fetch_assoc($check_result_like);
+      $SavedID = $row['SavedID'];
+      $update_sql = "DELETE FROM `Saves` WHERE `Saves`.`SavedID` = '$SavedID'";
+      mysqli_query($con, $update_sql);
+      echo '<div class="masseg"><h4>تم حذف من المفضلة</h4></div>';
+    } else {
+      $sql = "INSERT INTO `Saves`(UserID, ProductID) 
+    VALUES ('$UserID', '$ProductID')";
+      mysqli_query($con, $sql);
+      echo '<div class="masseg"><h4>تم الاضافة الي المفضلة</h4></div>';
+    }
+  } else {
+    echo '<div class="masseg"><h4>يجب عليك التسجيل اولا</h4></div>';
+  }
+}
+
+// Cart form add
+if (isset($_POST['addcart'])) {
   if (isset($_GET['id'])) {
     $ProductID = mysqli_real_escape_string($con, $_GET['id']);
-    $check_sql_like = "SELECT * FROM Saves WHERE UserID = '$UserID' AND ProductID = '$ProductID'";
-    $check_result_like = mysqli_query($con, $check_sql_like);
+    $query = "SELECT * FROM products WHERE id = '$ProductID'";
+    $result = mysqli_query($con, $query);
+    $product = mysqli_fetch_assoc($result);
   }
-  if (mysqli_num_rows($check_result_like) > 0) {
-    $row = mysqli_fetch_assoc($check_result_like);
-    $SavedID = $row['SavedID'];
-    $update_sql = "DELETE FROM `Saves` WHERE `Saves`.`SavedID` = '$SavedID'";
-    mysqli_query($con, $update_sql);
-    echo '<div class="masseg"><h4>تم حذف من المفضلة</h4></div>';
+  $quantity = $_POST['Quantity'];
+
+  // Check if product already exists in cart
+  $product_already_in_cart = false;
+  if (isset($_SESSION['cart'])) {
+    foreach ($_SESSION['cart'] as $item) {
+      if ($item['id'] == $product['id']) {
+        $product_already_in_cart = true;
+        break;
+      }
+    }
+  }
+
+  // If product already in cart, don't add it again
+  if ($product_already_in_cart) {
+    echo '<div class="masseg"><h4>المنتج موجود بالفعل في السلة.</h4></div>';
   } else {
-    $sql = "INSERT INTO `Saves`(UserID, ProductID) 
-    VALUES ('$UserID', '$ProductID')";
-    mysqli_query($con, $sql);
-    echo '<div class="masseg"><h4>تم الاضافة الي المفضلة</h4></div>';
+    // Prepare product data for cart
+    $cart_item = [
+      'id' => $product['id'],
+      'name' => $product['name'],
+      'price' => $product['price'],
+      'img' => $product['img'],
+      'quantity' => $quantity
+    ];
+
+    // Start session to store cart items
+    if (!isset($_SESSION['cart'])) {
+      $_SESSION['cart'] = [];
+    }
+    $_SESSION['cart'][] = $cart_item;
+
+    echo '<div class="masseg"><h4>تم إضافة المنتج إلى السلة.</h4></div>';
   }
 }
 
@@ -45,7 +93,7 @@ if (isset($_POST['delCart'])) {
     }
   }
   $_SESSION['cart'] = array_values($_SESSION['cart']);
-  echo "success";
+  echo '<div class="masseg"><h4>تم ازالة المنتج من لسلة </h4></div>';
 }
 // Cart form update quante
 if (isset($_POST['updateCart'])) {
@@ -58,13 +106,11 @@ if (isset($_POST['updateCart'])) {
       break;
     }
   }
-  echo "success";
-  exit();
+  echo '<div class="masseg"><h4>تم تعديل المنتج في لسلة </h4></div>';
 }
 
 
 // Send Order
-
 if (isset($_POST['confirm_order'])) {
   if (isset($_SESSION['cart'])) {
 
@@ -97,13 +143,13 @@ if (isset($_POST['confirm_order'])) {
       foreach ($_SESSION['cart'] as $key => $item) {
         unset($_SESSION['cart'][$key]);
       }
-      echo "تم تأكيد الطلب.";
+      echo '<div class="masseg"><h4>تم تأكيد الطلب</h4></div>';
       header('location: index.php');
     } else {
       echo "فشل في تأكيد الطلب: " . mysqli_error($con);
     }
   } else {
-    echo "سلة المشتريات فارغة.";
+    echo '<div class="masseg"><h4>سلة المشتريات فارغة.</h4></div>';
   }
 }
 
@@ -111,23 +157,52 @@ if (isset($_POST['confirm_order'])) {
 // dashboard 
 
 if (isset($_POST['cat'])) {
-  $name = mysqli_real_escape_string($con, $_POST['namee']);
-  $description = mysqli_real_escape_string($con, $_POST['descriptionn']);
+  // Escape the category name to prevent SQL injection
+  $name = mysqli_real_escape_string($con, $_POST['name']);
 
-  $sql = "INSERT INTO categories(name, description) 
-    VALUES ('$name', '$description')";
+  // Process the uploaded image
+  $img_tmp_name = $_FILES['img']['tmp_name'];
+  $img_extension = pathinfo($_FILES['img']['name'], PATHINFO_EXTENSION);
+  $allowed_extensions = ['png', 'jpeg', 'jpg'];
 
-  mysqli_query($con, $sql);
-  echo 'نجح الرفع';
-}
-if (isset($_POST['sup'])) {
-  $name = mysqli_real_escape_string($con, $_POST['namee']);
-  $categoryy = mysqli_real_escape_string($con, $_POST['category']);
+  if (!in_array($img_extension, $allowed_extensions)) {
+    die('امتداد الملف غير مسموح.');
+  }
 
-  $sql = "INSERT INTO suppliers(name, category_id, bill) 
-    VALUES ('$name', '$categoryy', '')";
+  // Update the image counter
+  $counterFile = 'counter.txt';
+  $currentCounter = 0;
 
-  mysqli_query($con, $sql);
+  if (file_exists($counterFile)) {
+    $currentCounter = file_get_contents($counterFile);
+    if ($currentCounter === false) {
+      die('خطأ في قراءة ملف العداد.');
+    }
+  }
+
+  $currentCounter = intval($currentCounter);
+  $newCounter = $currentCounter + 1;
+
+  if (file_put_contents($counterFile, $newCounter) === false) {
+    die('خطأ في كتابة ملف العداد.');
+  }
+
+  // Construct the new image name
+  $new_img_name = "فئة_زركش" . $newCounter . "." . $img_extension;
+  $catimg = "Assets/imgs/" . $new_img_name;
+
+  // Move the uploaded file to the desired path
+  if (!move_uploaded_file($img_tmp_name, $catimg)) {
+    die('فشل في رفع الملف.');
+  }
+
+  // Insert the data into the database
+  $sql = "INSERT INTO categories (name, Catimg) VALUES ('$name', '$catimg')";
+
+  if (!mysqli_query($con, $sql)) {
+    die('خطأ في إدخال البيانات في قاعدة البيانات: ' . mysqli_error($con));
+  }
+
   echo 'نجح الرفع';
 }
 

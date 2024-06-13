@@ -19,45 +19,6 @@ if (isset($_GET['id'])) {
   exit();
 }
 
-// Cart form add
-// Cart form add
-if (isset($_POST['addcart'])) {
-  $quantity = $_POST['Quantity'];
-
-  // Check if product already exists in cart
-  $product_already_in_cart = false;
-  foreach ($_SESSION['cart'] as $item) {
-    if ($item['id'] == $product['id']) {
-      $product_already_in_cart = true;
-      break;
-    }
-  }
-
-  // If product already in cart, don't add it again
-  if ($product_already_in_cart) {
-    echo "المنتج موجود بالفعل في السلة.";
-    echo '<a href="cart.php">عرض السلة</a>';
-  } else {
-    // Prepare product data for cart
-    $cart_item = [
-      'id' => $product['id'],
-      'name' => $product['name'],
-      'price' => $product['price'],
-      'img' => $product['img'],
-      'quantity' => $quantity
-    ];
-
-    // Start session to store cart items
-    if (!isset($_SESSION['cart'])) {
-      $_SESSION['cart'] = [];
-    }
-    $_SESSION['cart'][] = $cart_item;
-
-    echo "تم إضافة المنتج إلى السلة.";
-    echo '<a href="cart.php">عرض السلة</a>';
-  }
-}
-
 ?>
 
 <section>
@@ -73,6 +34,15 @@ if (isset($_POST['addcart'])) {
         <span class="price">
           جنيه <?php echo $product['price']; ?>
         </span>
+        <?php if (isset($UserID) && $UserID == 0) { ?>
+          <div class="title">
+            <h2><?php echo $product['name']; ?></h2>
+            <h4>المخزون <?php echo $product["quantity"] ?></h4>
+            <h4>شراء <?php echo $product["purchase_price"] ?></h4>
+            <h4>ربح <?php echo $product["price"] -  $product["purchase_price"] ?></h4>
+            <a class="icon" href="editprod.php?id=<?php echo $product["id"] ?>"><button>تعديل</button></a>
+          </div>
+        <?php } ?>
         <p>
           <?php
           if ($product["quantity"] > 2) {
@@ -96,59 +66,56 @@ if (isset($_POST['addcart'])) {
     </div>
   </div>
   <div id="results" class="gust">
-    <section class="container products">
-      <div class="container">
-        <div class="products-carousel ">
-          <div data-aos="fade-left">
-            <div data-aos="fade-up">
-              <?php
-              $products = mysqli_query($con, "SELECT * FROM products WHERE products.category_id = '$category_id'");
-              while ($product = mysqli_fetch_array($products)) {
-              ?>
-                <div class="swiper-slide">
-                  <?php
-                  if ($product["Time"]) {
-                    $productTime = strtotime($product["Time"]);
-                    $twoDaysAgo = time() - (2 * 24 * 60 * 60);
-                    if ($productTime >= $twoDaysAgo) {
-                      echo '<div class="z-1 position-absolute rounded-3 m-3 px-3 border border-dark-subtle">جديد</div>';
-                    }
-                  }
-                  ?>
-                  <a href="product.php?id=<?php echo $product['id']; ?>">
-                    <div class="card">
-                      <div class="card_img">
-                        <div class="img"><img src="<?php echo $product["img"]; ?>" alt="image"></div>
-                      </div>
-                      <div class="card_title">
-                        <h6><?php echo $product['name']; ?></h6>
-                      </div>
-                      <div class="card_footer">
-                        <?php if (isset($UserID) && $UserID == 0) { ?>
-                          <div class="card-footer">
-                            <span class="text-title">الكمية <?php echo $product["quantity"] ?></span>
-                            <span class="text-title">شراء <?php echo $product["purchase_price"] ?></span>
-                            <span class="text-title">بيع <?php echo $product["price"] ?></span>
-                            <span class="text-title">ربح <?php echo $product["price"] -  $product["purchase_price"] ?></span>
-                            <div class="card_btn"><a href="editprod.php?id=<?php echo $product["id"] ?>">تعديل</a></div>
-                          <?php } ?>
-                          <div class="card_price">
-                            <h3><?php echo $product['price']; ?> جنية</h3>
-                          </div>
-                          </div>
-                  </a>
-                </div>
-              <?php } ?>
+    <div class="products" data-aos="fade-left">
+      <?php
+      $products = mysqli_query($con, "SELECT * FROM products WHERE products.category_id = '$category_id' LIMIT 6");
+      while ($product = mysqli_fetch_array($products)) {
+      ?>
+        <!-- product -->
+        <a class="prodcard" href="product.php?id=<?php echo $product['id']; ?>" data-aos="fade-up">
+          <div class="front">
+            <?php
+            if ($product["Time"]) {
+              $productTime = strtotime($product["Time"]);
+              $twoDaysAgo = time() - (2 * 24 * 60 * 60);
+              if ($productTime >= $twoDaysAgo) {
+                echo '<div class="new lable">جديد</div>';
+              }
+            }
+            ?>
+            <div class="img"><img src="<?php echo $product['img']; ?>" alt=""></div>
+            <div class="title">
+              <h3><?php echo $product['name']; ?></h3>
+              <h4><?php echo $product['price']; ?> جنية</h4>
             </div>
           </div>
-        </div>
-      </div>
-    </section>
-  </div>
 
-  <form action="product.php" method="post">
-    <button type="submit" name="confirm_order">تأكيد الطلب</button>
-  </form>
+          <div class="back">
+            <?php if (isset($UserID) && $UserID == 0) { ?>
+              <div class="title">
+                <h2><?php echo $product['name']; ?></h2>
+                <h4>المخزون <?php echo $product["quantity"] ?></h4>
+                <h4>شراء <?php echo $product["purchase_price"] ?></h4>
+                <h4>بيع <?php echo $product["price"] ?></h4>
+                <h4>ربح <?php echo $product["price"] -  $product["purchase_price"] ?></h4>
+              </div>
+            <?php } else { ?>
+              <div class="title">
+                <h2><?php echo $product['name']; ?></h2>
+              </div>
+              <div class="but">
+                <form class="but" action="index.php?id=<?php echo $product['id']; ?>" method="post">
+                  <input type="hidden" name="Quantity" value="1" min="1" required>
+                  <button type="submit" name="addcart" class="icon material-symbols-outlined">shopping_cart</button>
+                  <button type="submit" name="like" class="icon material-symbols-outlined">favorite</button>
+                </form>
+              </div>
+            <?php } ?>
+          </div>
+        </a>
+      <?php } ?>
+    </div>
+  </div>
 </section>
 
 <?php include('layout/footer.php'); ?>

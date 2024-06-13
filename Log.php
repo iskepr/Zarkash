@@ -12,7 +12,7 @@ if (isset($_POST['login'])) {
 
   // Remove unnecessary isset check for $err_s
   // if (!isset($err_s)) {
-  $sql = "SELECT id, name, phone, adress, city, home, email, img FROM users WHERE email='$email' AND password='$password'";
+  $sql = "SELECT id, UserName, phone, adress, city, home, email, img FROM users WHERE email='$email' AND password='$password'";
   $result = mysqli_query($con, $sql);
   $row = mysqli_fetch_assoc($result);
   if ($row) {
@@ -41,7 +41,7 @@ if (isset($_POST['creat'])) {
   $err_s = 0;
 
   if ($err_s == 0) {
-    $sql = "INSERT INTO `users` (`name`, `phone`, `adress`, `city`, `home`, `email`, `password`, `img`) 
+    $sql = "INSERT INTO `users` (`UserName`, `phone`, `adress`, `city`, `home`, `email`, `password`, `img`) 
     VALUES ('$name', '$phone', '$adress', '$city', '$home_number', '$email', '$password', '$img')";
     mysqli_query($con, $sql);
 
